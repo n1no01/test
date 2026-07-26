@@ -52,39 +52,22 @@
 
       const data = await res.json();
       if(data.success) {
-        const isGood = data.score >= 70;
+        const isGood = data.score >= 85;
         const statusText = isGood ? "High Recommendation Odds" : "Needs AEO Optimization";
         const statusColor = isGood ? "#16a34a" : "#dc2626";
 
         resultDiv.style.display = "block";
         resultDiv.innerHTML = `
-          <div style="padding:14px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
-            <div style="display:flex; justify-content:space-between; items-center; border-bottom:1px solid #e2e8f0; pb:8px; margin-bottom:10px;">
-              <div>
-                <div style="font-size:10px; color:#64748b; font-weight:bold; text-transform:uppercase;">Overall AEO Score</div>
-                <div style="font-size:24px; font-weight:900; color:${statusColor};">${data.score}/100</div>
-              </div>
-              <div style="text-align:right;">
-                <span style="font-size:11px; font-weight:bold; color:${statusColor}; background:${isGood ? '#f0fdf4' : '#fef2f2'}; padding:4px 8px; border-radius:6px; border:1px solid ${isGood ? '#bbf7d0' : '#fecaca'};">
-                  ${statusText}
-                </span>
-              </div>
+          <div style="padding:14px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:10px; color:#64748b; font-weight:bold; text-transform:uppercase;">Overall AEO Score</div>
+              <div style="font-size:28px; font-weight:900; color:${statusColor};">${data.score}/100</div>
             </div>
-
-            <div style="font-size:11px; color:#334155; margin-top:8px; display:flex; flex-direction:column; gap:4px;">
-              <div style="display:flex; justify-content:space-between;">
-                <span>🤖 ChatGPT Recommendation:</span>
-                <strong>${data.score >= 70 ? 'High' : data.score >= 40 ? 'Moderate' : 'Low'}</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between;">
-                <span>🔍 Perplexity Citation:</span>
-                <strong>${data.score >= 60 ? 'Likely' : 'Unlikely'}</strong>
-              </div>
+            <div style="text-align:right;">
+              <span style="font-size:11px; font-weight:bold; color:${statusColor}; background:${isGood ? '#f0fdf4' : '#fef2f2'}; padding:6px 10px; border-radius:8px; border:1px solid ${isGood ? '#bbf7d0' : '#fecaca'};">
+                ${statusText}
+              </span>
             </div>
-
-            <p style="font-size:10px; color:#64748b; margin-top:10px; text-align:center; font-style:italic;">
-              Full detailed report has been sent to your email.
-            </p>
           </div>
         `;
       } else {
@@ -100,6 +83,5 @@
   });
 })();
 </script>
-
 </body>
 </html>
