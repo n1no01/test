@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Local Widget Test</title>
+</head>
+<body style="padding: 40px; background: #f8fafc; font-family: sans-serif;">
+<div id="aeo-audit-widget"></div>
+<script>
+(function() {
+  const API_KEY = "aeo_live_8edbbcd1fd84da851b1d689206c9fdaa";
+  const API_URL = "https://aeoaudit-pro.com/api/widget";
+  const container = document.getElementById("aeo-audit-widget");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="max-width:420px; padding:24px; background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; font-family:sans-serif; box-shadow:0 10px 25px -5px rgba(0,0,0,0.05);">
+      <h3 style="margin:0 0 6px 0; font-size:18px; color:#0f172a; font-weight:800;">Check Your AEO Score</h3>
+      <p style="margin:0 0 16px 0; font-size:12px; color:#64748b;">Instant AI Search Engine Optimization readiness check.</p>
+
+      <form id="aeo-widget-form" style="display:flex; flex-direction:column; gap:10px;">
+        <input type="url" id="aeo-url" placeholder="https://yourwebsite.com" required style="padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:13px;" />
+        <input type="email" id="aeo-email" placeholder="your@email.com" required style="padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:13px;" />
+        <button type="submit" id="aeo-btn" style="padding:10px; background:#2563eb; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">Get Your Free Score →</button>
+      </form>
+
+      <div id="aeo-result" style="margin-top:16px; display:none;"></div>
+
+      <p style="margin-top:14px; font-size:10px; color:#94a3b8; text-align:center;">
+        Powered by <a href="https://aeoaudit-pro.com" rel="nofollow" target="_blank" style="color:#2563eb; text-decoration:none; font-weight:bold;">AEO Audit Pro</a>
+      </p>
+    </div>
+  `;
+
+  document.getElementById("aeo-widget-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("aeo-btn");
+    const resultDiv = document.getElementById("aeo-result");
+    btn.innerText = "Analyzing Website...";
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetUrl: document.getElementById("aeo-url").value,
+          leadEmail: document.getElementById("aeo-email").value,
+          apiKey: API_KEY
+        })
+      });
+
+      const data = await res.json();
+      if(data.success) {
+        const isGood = data.score >= 70;
+        const statusText = isGood ? "High Recommendation Odds" : "Needs AEO Optimization";
+        const statusColor = isGood ? "#16a34a" : "#dc2626";
+
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = `
+          <div style="padding:14px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+            <div style="display:flex; justify-content:space-between; items-center; border-bottom:1px solid #e2e8f0; pb:8px; margin-bottom:10px;">
+              <div>
+                <div style="font-size:10px; color:#64748b; font-weight:bold; text-transform:uppercase;">Overall AEO Score</div>
+                <div style="font-size:24px; font-weight:900; color:${statusColor};">${data.score}/100</div>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:11px; font-weight:bold; color:${statusColor}; background:${isGood ? '#f0fdf4' : '#fef2f2'}; padding:4px 8px; border-radius:6px; border:1px solid ${isGood ? '#bbf7d0' : '#fecaca'};">
+                  ${statusText}
+                </span>
+              </div>
+            </div>
+
+            <div style="font-size:11px; color:#334155; margin-top:8px; display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between;">
+                <span>🤖 ChatGPT Recommendation:</span>
+                <strong>${data.score >= 70 ? 'High' : data.score >= 40 ? 'Moderate' : 'Low'}</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span>🔍 Perplexity Citation:</span>
+                <strong>${data.score >= 60 ? 'Likely' : 'Unlikely'}</strong>
+              </div>
+            </div>
+
+            <p style="font-size:10px; color:#64748b; margin-top:10px; text-align:center; font-style:italic;">
+              Full detailed report has been sent to your email.
+            </p>
+          </div>
+        `;
+      } else {
+        alert(data.error || "Scan failed.");
+      }
+    } catch(err) {
+      console.error(err);
+      alert("Error connecting to AEO Audit engine.");
+    } finally {
+      btn.innerText = "Get Your Free Score →";
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
